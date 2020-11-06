@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<style>
+body {
+  margin: 0px;
+  overflow: hidden;
+}
+
+circle {
+
+  opacity: 0.3;
+}
+
+text {
+  font-family: sans-serif;
+  fill: #4d4a47;
+}
+
+.tick text {
+  font-size: 2.7em;
+  fill: #635F5D;
+}
+
+.tick line {
+  stroke: #C0C0BB;
+}
+
+.axis-label {
+  font-size: 3.7em;
+  fill: #8E8883;
+}
+
+.title {
+  font-size: 3.7em;
+  fill: #635F5D;
+}
+
+.xdiv {
+	text-align: center;
+  font-family: sans-serif;
+}
+</style>
+<html>
+  <head>
+    <title>Iris Scatter Plot</title>
+    <script src="https://unpkg.com/d3@5.6.0/dist/d3.min.js"></script>
+  </head>
+  <body>
+  	<div class="xdiv">
+    <svg width="960" height="450"></svg></div>
+    <script>
+(function (d3) {
+  'use strict';
+
+  var selectedData = [
+    'sepal length',
+    'sepal width',
+    'petal length',
+    'petal width',
+  ];
+  var selectedDataY = [
+    'sepal length',
+    'sepal width',
+    'petal length',
+    'petal width',
+  ];
+  const svg = d3.select('svg');
+
+  const width = +svg.attr('width');
+  const height = +svg.attr('height');
+
+  const render = (data) => {
+    const title = 'Iris Scatter Plot';
+    let xValue = (d) => d.sepalLength;
+    let xAxisLabel = 'sepal length';
+    let yValue = (d) => d.sepalLength;
+    let yAxisLabel = 'sepal length';
+    let circleRadius = 10;
+    if (selectedData.indexOf(d3.select('.selectX').property('value')) == 1) {
+      xValue = (d) => d.sepalWidth;
+      xAxisLabel = 'sepal width';
+    } else if (selectedData.indexOf(d3.select('.selectX').property('value')) == 2) {
+      xValue = (d) => d.petalLength;
+      xAxisLabel = 'petal length';
+    } else if (selectedData.indexOf(d3.select('.selectX').property('value')) == 3) {
+      xValue = (d) => d.petalWidth;
+      xAxisLabel = 'petal width';
+    }
+    if (selectedData.indexOf(d3.select('.selectY').property('value')) == 1) {
+      yValue = (d) => d.sepalWidth;
+      yAxisLabel = 'sepal width';
+    } else if (selectedData.indexOf(d3.select('.selectY').property('value')) == 2) {
+      yValue = (d) => d.petalLength;
+      yAxisLabel = 'petal length';
+    } else if (selectedData.indexOf(d3.select('.selectY').property('value')) == 3) {
+      yValue = (d) => d.petalWidth;
+      yAxisLabel = 'petal width';
+    }
+
+
+
+    const margin = { top: 60, right: 40, bottom: 88, left: 150 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(data, xValue))
+      .range([0, innerWidth])
+      .nice();
+
+    const yScale = d3.scaleLinear()
+      .domain(d3.extent(data, yValue))
+      .range([innerHeight, 0])
+      .nice();
+
+    const g = svg
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const xAxis = d3.axisBottom(xScale).tickSize(-innerHeight).tickPadding(15);
+
+    const yAxis = d3.axisLeft(yScale).tickSize(-innerWidth).tickPadding(10);
+
+    const yAxisG = g.append('g').call(yAxis);
+    yAxisG.selectAll('.domain').remove();
+
+    yAxisG
+      .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -93)
+      .attr('x', -innerHeight / 2)
+      .attr('fill', 'black')
+      .attr('transform', `rotate(-90)`)
+      .attr('text-anchor', 'middle')
+      .text(yAxisLabel);
+
+    const xAxisG = g
+      .append('g')
+      .call(xAxis)
+      .attr('transform', `translate(0,${innerHeight})`);
+
+    xAxisG.select('.domain').remove();
+    let color = d3.scaleOrdinal(d3.schemeCategory10);
+    xAxisG
+      .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', 75)
+      .attr('x', innerWidth / 2)
+      .attr('fill', 'black')
+      .text(xAxisLabel);
+    g.selectAll('circle')
+      .data(data)
+      .enter().append('circle')
+      .attr('cy', (d) => yScale(yValue(d)))
+      .attr('cx', (d) => xScale(xValue(d)))
+      .attr('r', circleRadius)
+    	.style("fill", (d) => color(d.class));
+
+    g.append('text').attr('class', 'title').attr('y', -10).attr('x', +150).text(title);
+    var legend = svg.selectAll(".legend")
+    .data(color.domain())
+    .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(0," + i * 17 + ")"; });
+  	legend.append('circle').attr('cy', 15)
+      .attr('cx', width - margin.right + 2)
+      .attr('r', circleRadius/1.3)
+    	.style("fill", (d) => color(d));
+    legend.append("text")
+        .attr("x", width - margin.right - 8)
+        .attr("y", 14)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d; });
+  };
+
+  var xx = d3.select('body')
+  	.append('div')
+  	.attr('class', 'xdiv')
+  	.text("X axis：")
+    .append('select')
+    .attr('class', 'selectX')
+    .on('change', onchange);
+  var options = xx
+    .selectAll('option')
+    .data(selectedData)
+    .enter()
+    .append('option')
+    .text(function (d) {
+      return d;
+    });
+  var yy = d3.select('body')
+  	.append('div')
+  	.attr('class', 'xdiv')
+  	.text("Y axis：")
+    .append('select')
+    .attr('class', 'selectY')
+    .on('change', onchange);
+  var options = yy
+    .selectAll('option')
+    .data(selectedDataY)
+    .enter()
+    .append('option')
+    .text(function (d) {
+      return d;
+    });
+  function onchange() {
+    d3.selectAll('svg > *').remove();
+
+    d3.csv('http://vis.lab.djosix.com:2020/data/iris.csv').then((data) => {
+	    if(data[data.length-1]["sepal length"] == ""){
+	        data.splice(data.length-1, 1) ;
+	    }
+      data.forEach((d) => {
+      if(d['sepal length'] != '') {
+        d.sepalLength = +d['sepal length'];
+        d.sepalWidth = +d['sepal width'];
+        d.petalLength = +d['petal length'];
+        d.petalWidth = +d['petal width'];
+      	d.class = d['class'];}
+      });
+      render(data);
+    });
+  }
+
+  d3.csv('http://vis.lab.djosix.com:2020/data/iris.csv').then((data) => {
+    if(data[data.length-1]["sepal length"] == ""){
+        data.splice(data.length-1, 1) ;
+    }
+    data.forEach((d) => {
+      if(d['sepal length'] != "") {
+		  d.sepalLength = +d['sepal length'];
+		  d.sepalWidth = +d['sepal width'];
+		  d.petalLength = +d['petal length'];
+		  d.petalWidth = +d['petal width'];
+		  d.class = d['class'];
+		}
+
+    });
+    render(data);
+  });
+
+}(d3));
+    </script>
+  </body>
+</html>
