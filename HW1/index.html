@@ -206,7 +206,7 @@ text {
   function onchange() {
     d3.selectAll('svg > *').remove();
 
-    d3.csv('http://vis.lab.djosix.com:2020/data/iris.csv').then((data) => {
+    d3.csv('iris.csv').then((data) => {
 	    if(data[data.length-1]["sepal length"] == ""){
 	        data.splice(data.length-1, 1) ;
 	    }
@@ -222,7 +222,7 @@ text {
     });
   }
 
-  d3.csv('http://vis.lab.djosix.com:2020/data/iris.csv').then((data) => {
+  d3.csv('iris.csv').then((data) => {
     if(data[data.length-1]["sepal length"] == ""){
         data.splice(data.length-1, 1) ;
     }
