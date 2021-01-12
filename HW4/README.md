@@ -1,0 +1,3 @@
+In this homework, your goal is to extend the third homework by reordering nodes in the adjacency matrix view. Specifically, you have two choices. The first is to implement the "Fast Optimal Leaf Ordering for Hierarchical Clustering" method by yourself. You may refer to the paper https://people.csail.mit.edu/tommi/papers/BarGifJaa-ismb01.pdf if you would like to study more details about the algorithm. The second choice is to call the Reorder.js library (https://github.com/jdfekete/reorder.js/ ), but you will get 85 at most in this homework, compared with 100 at most by your own implementation. It's up to you.
+
+dataset: `http://networkrepository.com/infect-dublin.php`
